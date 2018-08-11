@@ -1,0 +1,32 @@
+{
+  "name": "planning-poker.server",
+  "version": "0.0.1",
+  "description": "Sprint planning tool to make agile estimating and planning faster and more efficient",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisandrews7/planning-poker.server.git"
+  },
+  "author": "Chris Andrews",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chrisandrews7/planning-poker.server/issues"
+  },
+  "homepage": "https://github.com/chrisandrews7/planning-poker.server#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-prettier": "^2.6.2",
+    "jest": "^23.5.0",
+    "sinon": "^6.1.5"
+  },
+  "dependencies": {
+    "awilix": "^3.0.9",
+    "express": "^4.16.3",
+    "helmet": "^3.13.0"
+  }
+}
