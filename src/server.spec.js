@@ -16,11 +16,11 @@ describe('server', () => {
       info: () => {},
     },
   };
-  const server = serverFactory(dependencies);
+  const { start, stop } = serverFactory(dependencies);
 
   describe('start()', () => {
     it('starts the server', () => {
-      server.start();
+      start();
 
       expect(dependencies.socket.listen).to.have.been.calledWithExactly(dependencies.config.PORT);
     });
@@ -28,7 +28,7 @@ describe('server', () => {
 
   describe('stop()', () => {
     it('stops the server', () => {
-      server.stop();
+      stop();
 
       expect(dependencies.socket.close).to.have.been.called;
     });
