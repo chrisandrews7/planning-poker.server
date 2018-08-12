@@ -1,4 +1,4 @@
-module.exports = () => {
+module.exports = ({ log }) => {
   const validateRequiredParam = (name, value) => {
     if (!value) {
       throw new Error(`${name} is required`);
@@ -11,6 +11,7 @@ module.exports = () => {
     setBoard(boardId) {
       validateRequiredParam('Board ID', boardId);
       state.set(boardId, new Map());
+      log.info({ boardId }, 'New board added');
     },
     getBoard(boardId) {
       validateRequiredParam('Board ID', boardId);

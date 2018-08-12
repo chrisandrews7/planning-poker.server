@@ -5,7 +5,11 @@ const storeFactory = require('./store');
 
 describe('store', () => {
   let boardId;
-  const store = storeFactory({});
+  const store = storeFactory({
+    log: {
+      info: () => {},
+    },
+  });
 
   beforeEach(() => {
     boardId = v4();
