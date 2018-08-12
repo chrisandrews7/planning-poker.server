@@ -3,6 +3,6 @@ node_js:
   - "node"
 script:
   - npm run lint
-  - npm run coverage -- --coverageReporters=text-lcov
+  - npm run coverage
 after_script:
-  - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+  - npm run coverage -- --coverageReporters=text-lcov | ./node_modules/coveralls/bin/coveralls.js
