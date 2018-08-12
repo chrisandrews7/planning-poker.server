@@ -1,6 +1,6 @@
 module.exports = () => {
   const validateRequiredParam = (name, value) => {
-    if(!value) {
+    if (!value) {
       throw new Error(`${name} is required`);
     }
   };
@@ -12,10 +12,10 @@ module.exports = () => {
       validateRequiredParam('Board ID', boardId);
       state.set(boardId, new Map());
     },
-    getBoard(boardId) { 
+    getBoard(boardId) {
       validateRequiredParam('Board ID', boardId);
       const boardState = state.get(boardId);
-      
+
       return {
         state: boardState,
         addPlayer(playerId, data) {
@@ -33,7 +33,7 @@ module.exports = () => {
         removePlayer(playerId) {
           validateRequiredParam('Player ID', playerId);
           boardState.delete(playerId);
-        }
+        },
       };
     },
   };

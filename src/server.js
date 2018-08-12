@@ -5,8 +5,6 @@ module.exports = ({ socket, config, log }) => ({
   },
 
   stop() {
-    socket.close(() => {
-      log.info('Server terminated');
-    });
+    socket.close(() => log.info('Server terminated'));
   },
 });

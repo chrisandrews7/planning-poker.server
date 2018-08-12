@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const { spy } = require('sinon');
 const { v4 } = require('uuid');
 
 const storeFactory = require('./store');
@@ -35,7 +34,7 @@ describe('store', () => {
     describe('state', () => {
       it('returns the current state of a board', () => {
         const { state } = store.getBoard(boardId);
-  
+
         expect(state).to.deep.equal(new Map());
       });
     });
@@ -58,7 +57,7 @@ describe('store', () => {
       describe('when no player name is provided', () => {
         it('throws an error', () => {
           const { addPlayer } = store.getBoard(boardId);
-          
+
           expect(() => addPlayer(playerId, {})).to.throw(Error, 'Player Name is required');
         });
       });
@@ -67,7 +66,7 @@ describe('store', () => {
         it('sets a default undefined value', () => {
           const { addPlayer, state } = store.getBoard(boardId);
           addPlayer(playerId, { name: 'Simon' }); // No vote value
-    
+
           expect(state.get(playerId)).to.have.property('vote', undefined);
         });
       });
@@ -75,16 +74,13 @@ describe('store', () => {
       it('adds the new player to the board', () => {
         const { addPlayer, state } = store.getBoard(boardId);
         addPlayer(playerId, player);
-  
+
         expect(state.get(playerId)).to.deep.equal(player);
       });
     });
 
     describe('removePlayer()', () => {
       const playerId = v4();
-      const player = {
-        name: 'Simon',
-      };
 
       describe('when no player ID is provided', () => {
         it('throws an error', () => {
@@ -97,7 +93,7 @@ describe('store', () => {
       it('removes the player from the board', () => {
         const { removePlayer, state } = store.getBoard(boardId);
         removePlayer(playerId);
-  
+
         expect(state.has(playerId)).to.be.false;
       });
     });
@@ -118,7 +114,7 @@ describe('store', () => {
 
       it('sets the players vote value', () => {
         const { setVote, addPlayer, state } = store.getBoard(boardId);
-  
+
         addPlayer(playerId, player);
         setVote(playerId, 55);
 

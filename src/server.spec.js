@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { spy } = require('sinon');
+const { stub, spy } = require('sinon');
 
 const serverFactory = require('./server');
 
@@ -7,7 +7,7 @@ describe('server', () => {
   const dependencies = {
     socket: {
       listen: spy(),
-      close: spy(),
+      close: stub().yields(),
     },
     config: {
       PORT: 3000,

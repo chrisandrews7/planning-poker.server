@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "jest src"
+    "test": "jest src",
+    "coverage": "jest src --coverage",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -19,9 +21,10 @@
   "homepage": "https://github.com/chrisandrews7/planning-poker.server#readme",
   "devDependencies": {
     "chai": "^4.1.2",
-    "eslint": "^5.3.0",
-    "eslint-config-airbnb": "^17.0.0",
-    "eslint-plugin-prettier": "^2.6.2",
+    "coveralls": "^3.0.2",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
     "jest": "^23.5.0",
     "sinon": "^6.1.5",
     "sinon-chai": "^3.2.0",
