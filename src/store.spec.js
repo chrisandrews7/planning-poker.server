@@ -43,7 +43,7 @@ describe('store', () => {
       const playerId = v4();
       const player = {
         name: 'Steve',
-        vote: undefined,
+        vote: 8,
       };
 
       describe('when no player ID is provided', () => {
