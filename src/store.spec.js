@@ -4,7 +4,7 @@ const { v4 } = require('uuid');
 const storeFactory = require('./store');
 
 describe('store', () => {
-  const { setBoard, getBoard } = storeFactory({
+  const { getBoard } = storeFactory({
     log: {
       info: () => {},
     },
@@ -14,25 +14,18 @@ describe('store', () => {
 
   beforeEach(() => {
     boardId = v4();
-    setBoard(boardId);
-  });
-
-  describe('startBoard()', () => {
-    describe('when no board ID is provided', () => {
-      it('throws an error', () => {
-        expect(setBoard).to.throw(Error, 'Board ID is required');
-      });
-    });
-
-    it('generates a new board', () => {
-      expect(getBoard(boardId).state).to.deep.equal(new Map());
-    });
   });
 
   describe('getBoard()', () => {
     describe('when no board ID is provided', () => {
       it('throws an error', () => {
         expect(getBoard).to.throw(Error, 'Board ID is required');
+      });
+    });
+
+    describe('when a board cannot be found', () => {
+      it('generates a new board', () => {
+        expect(getBoard(boardId).state).to.deep.equal(new Map());
       });
     });
 

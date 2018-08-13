@@ -8,13 +8,14 @@ module.exports = ({ log }) => {
   const state = new Map();
 
   return {
-    setBoard(boardId) {
-      validateRequiredParam('Board ID', boardId);
-      state.set(boardId, new Map());
-      log.info({ boardId }, 'New board added');
-    },
     getBoard(boardId) {
       validateRequiredParam('Board ID', boardId);
+
+      if (!state.has(boardId)) {
+        state.set(boardId, new Map());
+        log.info({ boardId }, 'New board added');
+      }
+
       const boardState = state.get(boardId);
 
       return {
