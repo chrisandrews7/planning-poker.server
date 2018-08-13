@@ -2,8 +2,10 @@ const { asFunction, asValue, createContainer } = require('awilix');
 const pino = require('pino')();
 const socket = require('socket.io')();
 
-const server = require('./server');
 const constants = require('./constants');
+const server = require('./server');
+const store = require('./store');
+const handlers = require('./handlers');
 
 const container = createContainer();
 
@@ -15,6 +17,8 @@ container.register({
 container.register({
   constants: asValue(constants),
   server: asFunction(server),
+  store: asFunction(store),
+  handlers: asFunction(handlers),
   config: asValue({
     PORT: 3000,
   }),
