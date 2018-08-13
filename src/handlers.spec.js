@@ -22,6 +22,9 @@ describe('handlers', () => {
 
   const dependencies = {
     constants,
+    log: {
+      info: () => {},
+    },
     store: {
       getBoard: sandbox.stub().returns(getBoardStub),
     },

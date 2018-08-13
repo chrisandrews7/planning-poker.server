@@ -1,6 +1,7 @@
 module.exports = ({
   store,
   constants,
+  log,
 }) => ({
   connect(socket, { name, roomId }) {
     const board = store.getBoard(socket.roomId);
@@ -22,6 +23,12 @@ module.exports = ({
       .emit(constants.CONNECTED, {
         board: board.state,
       });
+
+    log.info({
+      roomId: socket.roomId,
+      playerId: socket.id,
+      name,
+    }, 'Player joined');
   },
 
   disconnect(socket) {
@@ -33,6 +40,11 @@ module.exports = ({
       .emit(constants.PLAYER_LEFT, {
         id: socket.id,
       });
+
+    log.info({
+      roomId: socket.roomId,
+      playerId: socket.id,
+    }, 'Player left');
   },
 
   castVote(socket, { vote }) {
@@ -45,5 +57,11 @@ module.exports = ({
         id: socket.id,
         vote,
       });
+
+    log.info({
+      roomId: socket.roomId,
+      playerId: socket.id,
+      vote,
+    }, 'Player voted');
   },
 });
