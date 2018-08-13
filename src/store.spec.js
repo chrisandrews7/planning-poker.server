@@ -4,12 +4,13 @@ const { v4 } = require('uuid');
 const storeFactory = require('./store');
 
 describe('store', () => {
-  let boardId;
   const { setBoard, getBoard } = storeFactory({
     log: {
       info: () => {},
     },
   });
+
+  let boardId;
 
   beforeEach(() => {
     boardId = v4();
