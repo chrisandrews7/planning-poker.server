@@ -1,5 +1,8 @@
 module.exports = {
+  CONNECTION: 'connection',
   CONNECTED: 'CONNECTED',
+
+  VOTE: 'vote',
 
   PLAYER_JOINED: 'PLAYER_JOINED',
   PLAYER_LEFT: 'PLAYER_LEFT',
