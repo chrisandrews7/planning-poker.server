@@ -1,6 +1,6 @@
 const { asFunction, asValue, createContainer } = require('awilix');
 const pino = require('pino')();
-const socket = require('socket.io')();
+const io = require('socket.io')();
 
 const constants = require('./constants');
 const server = require('./server');
@@ -11,7 +11,7 @@ const container = createContainer();
 
 container.register({
   log: asValue(pino),
-  socket: asValue(socket),
+  io: asValue(io),
 });
 
 container.register({

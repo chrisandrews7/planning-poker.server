@@ -1,10 +1,10 @@
-module.exports = ({ socket, config, log }) => ({
+module.exports = ({ io, config, log }) => ({
   start() {
-    socket.listen(config.PORT);
+    io.listen(config.PORT);
     log.info(`Server started listening on port ${config.PORT}`);
   },
 
   stop() {
-    socket.close(() => log.info('Server terminated'));
+    io.close(() => log.info('Server terminated'));
   },
 });

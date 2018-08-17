@@ -5,7 +5,7 @@ const serverFactory = require('./server');
 
 describe('server', () => {
   const dependencies = {
-    socket: {
+    io: {
       listen: spy(),
       close: stub().yields(),
     },
@@ -22,7 +22,7 @@ describe('server', () => {
     it('starts the server', () => {
       start();
 
-      expect(dependencies.socket.listen).to.have.been.calledWithExactly(dependencies.config.PORT);
+      expect(dependencies.io.listen).to.have.been.calledWithExactly(dependencies.config.PORT);
     });
   });
 
@@ -30,7 +30,7 @@ describe('server', () => {
     it('stops the server', () => {
       stop();
 
-      expect(dependencies.socket.close).to.have.been.called;
+      expect(dependencies.io.close).to.have.been.called;
     });
   });
 });
