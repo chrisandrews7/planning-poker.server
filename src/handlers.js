@@ -4,30 +4,32 @@ module.exports = ({
   log,
 }) => ({
   connect(socket, { name, roomId }) {
-    const board = store.getBoard(roomId);
-    board.addPlayer(socket.id, {
-      name,
-    });
+    socket.join(roomId, () => {
+      socket.roomId = roomId; // eslint-disable-line no-param-reassign
 
-    socket.join(roomId);
-
-    socket
-      .to(socket.roomId)
-      .emit(constants.PLAYER_JOINED, {
-        id: socket.id,
+      const board = store.getBoard(socket.roomId);
+      board.addPlayer(socket.id, {
         name,
       });
 
-    socket
-      .emit(constants.JOINED, {
-        board: board.state,
-      });
+      socket
+        .to(socket.roomId)
+        .emit(constants.PLAYER_JOINED, {
+          id: socket.id,
+          name,
+        });
 
-    log.info({
-      roomId: socket.roomId,
-      playerId: socket.id,
-      name,
-    }, 'Player joined');
+      socket
+        .emit(constants.JOINED, {
+          board: board.state,
+        });
+
+      log.info({
+        roomId: socket.roomId,
+        playerId: socket.id,
+        name,
+      }, 'Player joined');
+    });
   },
 
   disconnect(socket) {

@@ -15,7 +15,7 @@ describe('handlers', () => {
     state: 'mockState',
   };
   const socketStub = {
-    join: sandbox.stub(),
+    join: sandbox.stub().yields(),
     to: sandbox.stub().returnsThis(),
     emit: sandbox.stub().returnsThis(),
   };
@@ -53,24 +53,26 @@ describe('handlers', () => {
       expect(socketStub.join).to.have.been.calledWith(socketStub.roomId);
     });
 
-    it('adds the user to the game board', () => {
-      expect(dependencies.store.getBoard).to.have.been.calledWithExactly(socketStub.roomId);
-      expect(getBoardStub.addPlayer).to.have.been.calledWith(socketStub.id, {
-        name,
+    describe('once joined', () => {
+      it('adds the user to the game board', () => {
+        expect(dependencies.store.getBoard).to.have.been.calledWithExactly(socketStub.roomId);
+        expect(getBoardStub.addPlayer).to.have.been.calledWith(socketStub.id, {
+          name,
+        });
       });
-    });
 
-    it('emits to the room the user has joined', () => {
-      expect(socketStub.to).to.have.been.calledWith(socketStub.roomId);
-      expect(socketStub.emit).to.have.been.calledWith(constants.PLAYER_JOINED, {
-        id: socketStub.id,
-        name,
+      it('emits to the room the user has joined', () => {
+        expect(socketStub.to).to.have.been.calledWith(socketStub.roomId);
+        expect(socketStub.emit).to.have.been.calledWith(constants.PLAYER_JOINED, {
+          id: socketStub.id,
+          name,
+        });
       });
-    });
 
-    it('emits to the user the current game board state', () => {
-      expect(socketStub.emit).to.have.been.calledWith(constants.JOINED, {
-        board: getBoardStub.state,
+      it('emits to the user the current game board state', () => {
+        expect(socketStub.emit).to.have.been.calledWith(constants.JOINED, {
+          board: getBoardStub.state,
+        });
       });
     });
   });
