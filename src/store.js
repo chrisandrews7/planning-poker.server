@@ -5,36 +5,36 @@ module.exports = ({ log }) => {
     }
   };
 
-  const state = new Map();
+  const state = {};
 
   return {
     getBoard(boardId) {
       validateRequiredParam('Board ID', boardId);
 
-      if (!state.has(boardId)) {
-        state.set(boardId, new Map());
+      if (!state[boardId]) {
+        state[boardId] = {};
         log.info({ boardId }, 'New board added');
       }
 
-      const boardState = state.get(boardId);
+      const boardState = state[boardId];
 
       return {
         state: boardState,
         addPlayer(playerId, data) {
           validateRequiredParam('Player ID', playerId);
           validateRequiredParam('Player Name', data.name);
-          boardState.set(playerId, {
+          boardState[playerId] = {
             vote: undefined,
             ...data,
-          });
+          };
         },
         setVote(playerId, vote) {
           validateRequiredParam('Player ID', playerId);
-          boardState.get(playerId).vote = vote;
+          boardState[playerId].vote = vote;
         },
         removePlayer(playerId) {
           validateRequiredParam('Player ID', playerId);
-          boardState.delete(playerId);
+          boardState[playerId] = null;
         },
       };
     },

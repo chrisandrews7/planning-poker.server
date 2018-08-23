@@ -25,7 +25,7 @@ describe('store', () => {
 
     describe('when a board cannot be found', () => {
       it('generates a new board', () => {
-        expect(getBoard(boardId).state).to.deep.equal(new Map());
+        expect(getBoard(boardId).state).to.deep.equal({});
       });
     });
 
@@ -33,7 +33,7 @@ describe('store', () => {
       it('returns the current state of a board', () => {
         const { state } = getBoard(boardId);
 
-        expect(state).to.deep.equal(new Map());
+        expect(state).to.deep.equal({});
       });
     });
 
@@ -65,7 +65,7 @@ describe('store', () => {
           const { addPlayer, state } = getBoard(boardId);
           addPlayer(playerId, { name: 'Simon' }); // No vote value
 
-          expect(state.get(playerId)).to.have.property('vote', undefined);
+          expect(state[playerId]).to.have.property('vote', undefined);
         });
       });
 
@@ -73,7 +73,7 @@ describe('store', () => {
         const { addPlayer, state } = getBoard(boardId);
         addPlayer(playerId, player);
 
-        expect(state.get(playerId)).to.deep.equal(player);
+        expect(state[playerId]).to.deep.equal(player);
       });
     });
 
@@ -92,7 +92,7 @@ describe('store', () => {
         const { removePlayer, state } = getBoard(boardId);
         removePlayer(playerId);
 
-        expect(state.has(playerId)).to.be.false;
+        expect(state[playerId]).to.not.exist;
       });
     });
 
@@ -116,7 +116,7 @@ describe('store', () => {
         addPlayer(playerId, player);
         setVote(playerId, 55);
 
-        expect(state.get(playerId)).to.have.property('vote', 55);
+        expect(state[playerId]).to.have.property('vote', 55);
       });
     });
   });
