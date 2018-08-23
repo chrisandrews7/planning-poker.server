@@ -8,7 +8,9 @@ module.exports = ({
       io = socketio(config.PORT);
 
       io.on(constants.CONNECTION, (socket) => {
+        socket.on(constants.JOIN, handlers.connect.bind(null, socket));
         socket.on(constants.VOTE, handlers.castVote.bind(null, socket));
+        socket.on(constants.DISCONNECT, handlers.disconnect.bind(null, socket));
       });
 
       log.info(`Server started listening on port ${config.PORT}`);

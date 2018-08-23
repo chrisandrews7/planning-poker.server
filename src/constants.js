@@ -1,10 +1,12 @@
 module.exports = {
   CONNECTION: 'connection',
-  CONNECTED: 'CONNECTED',
+  DISCONNECT: 'disconnect',
 
+  JOIN: 'join',
+  JOINED: 'joined',
   VOTE: 'vote',
 
-  PLAYER_JOINED: 'PLAYER_JOINED',
-  PLAYER_LEFT: 'PLAYER_LEFT',
-  PLAYER_VOTED: 'PLAYER_VOTED',
+  PLAYER_JOINED: 'player_joined',
+  PLAYER_LEFT: 'player_left',
+  PLAYER_VOTED: 'player_voted',
 };

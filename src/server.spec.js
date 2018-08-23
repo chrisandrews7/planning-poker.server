@@ -23,7 +23,8 @@ describe('server', () => {
     socketio: stub().returns(ioStub),
     handlers: {
       connect: sandbox.spy(),
-      castVote: stub().returns('castVoteHandler'),
+      castVote: sandbox.spy(),
+      disconnect: sandbox.spy(),
     },
   };
   const { start, stop } = serverFactory(dependencies);
@@ -42,6 +43,21 @@ describe('server', () => {
     });
 
     describe('on a new socket connection', () => {
+      describe('on a JOIN event', () => {
+        it('uses the connect handler', () => {
+          const socketStub = { on: sandbox.stub().yields('testJoinData') };
+          ioStub
+            .on
+            .withArgs(constants.CONNECTION)
+            .yield(socketStub);
+
+          expect(socketStub.on).to.have.been.calledWith(
+            constants.JOIN,
+          );
+          expect(dependencies.handlers.connect).to.have.been.calledWith(socketStub, 'testJoinData');
+        });
+      });
+
       describe('on a VOTE event', () => {
         it('uses the castVote handler', () => {
           const socketStub = { on: sandbox.stub().yields('testVoteValue') };
@@ -54,6 +70,21 @@ describe('server', () => {
             constants.VOTE,
           );
           expect(dependencies.handlers.castVote).to.have.been.calledWith(socketStub, 'testVoteValue');
+        });
+      });
+
+      describe('on a DISCONNECT event', () => {
+        it('uses the disconnect handler', () => {
+          const socketStub = { on: sandbox.stub().yields('testDisconnectData') };
+          ioStub
+            .on
+            .withArgs(constants.CONNECTION)
+            .yield(socketStub);
+
+          expect(socketStub.on).to.have.been.calledWith(
+            constants.DISCONNECT,
+          );
+          expect(dependencies.handlers.disconnect).to.have.been.calledWith(socketStub, 'testDisconnectData');
         });
       });
     });
