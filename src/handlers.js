@@ -4,7 +4,7 @@ module.exports = ({
   log,
 }) => ({
   connect(socket, { name, roomId }) {
-    const board = store.getBoard(socket.roomId);
+    const board = store.getBoard(roomId);
     board.addPlayer(socket.id, {
       name,
     });
@@ -19,8 +19,7 @@ module.exports = ({
       });
 
     socket
-      .to(socket.id)
-      .emit(constants.CONNECTED, {
+      .emit(constants.JOINED, {
         board: board.state,
       });
 
