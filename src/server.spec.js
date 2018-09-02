@@ -73,7 +73,7 @@ describe('server', () => {
         });
       });
 
-      describe('on a DISCONNECT event', () => {
+      describe('on a DISCONNECTING event', () => {
         it('uses the disconnect handler', () => {
           const socketStub = { on: sandbox.stub().yields('testDisconnectData') };
           ioStub
@@ -82,7 +82,7 @@ describe('server', () => {
             .yield(socketStub);
 
           expect(socketStub.on).to.have.been.calledWith(
-            constants.DISCONNECT,
+            constants.DISCONNECTING,
           );
           expect(dependencies.handlers.disconnect).to.have.been.calledWith(socketStub, 'testDisconnectData');
         });
