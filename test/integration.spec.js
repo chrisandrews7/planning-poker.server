@@ -53,7 +53,7 @@ describe('Integration', () => {
       client1.emit(constants.JOIN, { roomId, name: 'Steve' });
     });
 
-    it('broadcasts to the existing players that a new player has joined', (done) => {
+    it('broadcasts to the other players that a new player has joined', (done) => {
       client1.emit(constants.JOIN, { roomId, name: 'Steve' });
 
       client1.once(constants.PLAYER_JOINED, ({ id, name }) => {
@@ -63,6 +63,23 @@ describe('Integration', () => {
       });
 
       client2.emit(constants.JOIN, { roomId, name: 'Susan' });
+    });
+  });
+
+  describe('when the user votes', () => {
+    beforeEach(() => {
+      client1.emit(constants.JOIN, { roomId, name: 'David' });
+      client2.emit(constants.JOIN, { roomId, name: 'Diane' });
+    });
+
+    it('broadcasts to the vote to the other players', (done) => {
+      client1.once(constants.PLAYER_VOTED, ({ id, vote }) => {
+        expect(id).to.equal(client2.id);
+        expect(vote).to.equal(13);
+        done();
+      });
+
+      client2.emit(constants.VOTE, { vote: 13 });
     });
   });
 });

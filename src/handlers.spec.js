@@ -111,7 +111,7 @@ describe('handlers', () => {
 
     it('updates the users vote in the game board', () => {
       expect(dependencies.store.getBoard).to.have.been.calledWithExactly(roomId);
-      expect(getBoardStub.setVote).to.have.been.calledWithExactly(vote);
+      expect(getBoardStub.setVote).to.have.been.calledWithExactly(socketStub.id, vote);
     });
 
     it('emits to the room the users vote', () => {

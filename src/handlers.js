@@ -54,7 +54,7 @@ module.exports = ({
     const roomId = getRoom(socket);
 
     const board = store.getBoard(roomId);
-    board.setVote(vote);
+    board.setVote(socket.id, vote);
 
     socket
       .to(roomId)
