@@ -19,6 +19,7 @@ describe('handlers', () => {
     to: sandbox.stub().returnsThis(),
     emit: sandbox.stub().returnsThis(),
   };
+  let roomId;
 
   const dependencies = {
     constants,
@@ -32,7 +33,13 @@ describe('handlers', () => {
   const { connect, disconnect, castVote } = handlersFactory(dependencies);
 
   beforeEach(() => {
-    socketStub.roomId = v4();
+    roomId = v4();
+
+    socketStub.id = v4();
+    socketStub.rooms = {
+      [roomId]: roomId,
+      [socketStub.id]: socketStub.id,
+    };
   });
 
   afterEach(() => {
@@ -45,24 +52,24 @@ describe('handlers', () => {
     beforeEach(() => {
       connect(socketStub, {
         name,
-        roomId: socketStub.roomId,
+        roomId,
       });
     });
 
     it('adds the user to the room', () => {
-      expect(socketStub.join).to.have.been.calledWith(socketStub.roomId);
+      expect(socketStub.join).to.have.been.calledWith(roomId);
     });
 
     describe('once joined', () => {
       it('adds the user to the game board', () => {
-        expect(dependencies.store.getBoard).to.have.been.calledWithExactly(socketStub.roomId);
+        expect(dependencies.store.getBoard).to.have.been.calledWithExactly(roomId);
         expect(getBoardStub.addPlayer).to.have.been.calledWith(socketStub.id, {
           name,
         });
       });
 
       it('emits to the room the user has joined', () => {
-        expect(socketStub.to).to.have.been.calledWith(socketStub.roomId);
+        expect(socketStub.to).to.have.been.calledWith(roomId);
         expect(socketStub.emit).to.have.been.calledWith(constants.PLAYER_JOINED, {
           id: socketStub.id,
           name,
@@ -83,12 +90,12 @@ describe('handlers', () => {
     });
 
     it('removes the user from the game board', () => {
-      expect(dependencies.store.getBoard).to.have.been.calledWithExactly(socketStub.roomId);
+      expect(dependencies.store.getBoard).to.have.been.calledWithExactly(roomId);
       expect(getBoardStub.removePlayer).to.have.been.calledWith(socketStub.id);
     });
 
     it('emits to the room the user has left', () => {
-      expect(socketStub.to).to.have.been.calledWith(socketStub.roomId);
+      expect(socketStub.to).to.have.been.calledWith(roomId);
       expect(socketStub.emit).to.have.been.calledWith(constants.PLAYER_LEFT, {
         id: socketStub.id,
       });
@@ -103,12 +110,12 @@ describe('handlers', () => {
     });
 
     it('updates the users vote in the game board', () => {
-      expect(dependencies.store.getBoard).to.have.been.calledWithExactly(socketStub.roomId);
+      expect(dependencies.store.getBoard).to.have.been.calledWithExactly(roomId);
       expect(getBoardStub.setVote).to.have.been.calledWithExactly(vote);
     });
 
     it('emits to the room the users vote', () => {
-      expect(socketStub.to).to.have.been.calledWith(socketStub.roomId);
+      expect(socketStub.to).to.have.been.calledWith(roomId);
       expect(socketStub.emit).to.have.been.calledWith(constants.PLAYER_VOTED, {
         id: socketStub.id,
         vote,

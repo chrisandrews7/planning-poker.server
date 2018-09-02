@@ -1,3 +1,5 @@
+const getRoom = socket => Object.keys(socket.rooms).filter(item => item !== socket.id)[0];
+
 module.exports = ({
   store,
   constants,
@@ -5,15 +7,13 @@ module.exports = ({
 }) => ({
   connect(socket, { name, roomId }) {
     socket.join(roomId, () => {
-      socket.roomId = roomId; // eslint-disable-line no-param-reassign
-
-      const board = store.getBoard(socket.roomId);
+      const board = store.getBoard(roomId);
       board.addPlayer(socket.id, {
         name,
       });
 
       socket
-        .to(socket.roomId)
+        .to(roomId)
         .emit(constants.PLAYER_JOINED, {
           id: socket.id,
           name,
@@ -25,7 +25,7 @@ module.exports = ({
         });
 
       log.info({
-        roomId: socket.roomId,
+        roomId,
         playerId: socket.id,
         name,
       }, 'Player joined');
@@ -33,34 +33,38 @@ module.exports = ({
   },
 
   disconnect(socket) {
-    const board = store.getBoard(socket.roomId);
+    const roomId = getRoom(socket);
+
+    const board = store.getBoard(roomId);
     board.removePlayer(socket.id);
 
     socket
-      .to(socket.roomId)
+      .to(roomId)
       .emit(constants.PLAYER_LEFT, {
         id: socket.id,
       });
 
     log.info({
-      roomId: socket.roomId,
+      roomId,
       playerId: socket.id,
     }, 'Player left');
   },
 
   castVote(socket, { vote }) {
-    const board = store.getBoard(socket.roomId);
+    const roomId = getRoom(socket);
+
+    const board = store.getBoard(roomId);
     board.setVote(vote);
 
     socket
-      .to(socket.roomId)
+      .to(roomId)
       .emit(constants.PLAYER_VOTED, {
         id: socket.id,
         vote,
       });
 
     log.info({
-      roomId: socket.roomId,
+      roomId,
       playerId: socket.id,
       vote,
     }, 'Player voted');
