@@ -89,7 +89,12 @@ describe('store', () => {
       });
 
       it('removes the player from the board', () => {
-        const { removePlayer, state } = getBoard(boardId);
+        const { removePlayer, state, addPlayer } = getBoard(boardId);
+
+        addPlayer(playerId, {
+          name: 'Steve',
+          vote: 5,
+        });
         removePlayer(playerId);
 
         expect(state[playerId]).to.not.exist;

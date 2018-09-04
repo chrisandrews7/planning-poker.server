@@ -34,7 +34,7 @@ module.exports = ({ log }) => {
         },
         removePlayer(playerId) {
           validateRequiredParam('Player ID', playerId);
-          boardState[playerId] = null;
+          delete boardState[playerId];
         },
       };
     },
