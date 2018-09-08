@@ -35,6 +35,18 @@ describe('store', () => {
 
         expect(state).to.deep.equal({});
       });
+
+      describe('when a board already exists', () => {
+        it('returns the state of the existing board', () => {
+          const playerId = v4();
+
+          const board1 = getBoard(boardId);
+          board1.addPlayer(playerId, { name: 'Simon' });
+
+          const board2 = getBoard(boardId);
+          expect(board2.state).to.have.key(playerId);
+        });
+      });
     });
 
     describe('addPlayer()', () => {

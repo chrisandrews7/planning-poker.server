@@ -92,6 +92,7 @@ describe('server', () => {
 
   describe('stop()', () => {
     it('stops the server', () => {
+      ioStub.close.yields();
       stop();
 
       expect(ioStub.close).to.have.been.called;
