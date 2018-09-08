@@ -20,7 +20,7 @@ module.exports = ({
         });
 
       socket
-        .emit(constants.JOINED, {
+        .emit(constants.GAME_UPDATED, {
           game: game.state,
         });
 

@@ -20,7 +20,7 @@ describe('Integration', () => {
     it('sends the user the current players on the game', (done) => {
       const client = io(SERVER_HOST);
 
-      client.once(constants.JOINED, ({ game }) => {
+      client.once(constants.GAME_UPDATED, ({ game }) => {
         expect(game).to.deep.equal({
           [client.id]: {
             name: 'Brian',

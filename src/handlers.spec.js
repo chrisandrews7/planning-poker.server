@@ -77,7 +77,7 @@ describe('handlers', () => {
       });
 
       it('emits to the user the current game state', () => {
-        expect(socketStub.emit).to.have.been.calledWith(constants.JOINED, {
+        expect(socketStub.emit).to.have.been.calledWith(constants.GAME_UPDATED, {
           game: getGameStub.state,
         });
       });

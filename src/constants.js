@@ -3,8 +3,9 @@ module.exports = {
   DISCONNECTING: 'disconnecting',
 
   JOIN: 'join',
-  JOINED: 'joined',
   VOTE: 'vote',
+
+  GAME_UPDATED: 'joined',
 
   PLAYER_JOINED: 'player_joined',
   PLAYER_LEFT: 'player_left',
