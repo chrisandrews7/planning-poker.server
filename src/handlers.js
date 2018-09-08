@@ -35,19 +35,21 @@ module.exports = ({
   disconnect(socket) {
     const gameId = getGame(socket);
 
-    const game = store.getGame(gameId);
-    game.removePlayer(socket.id);
+    if (gameId) {
+      const game = store.getGame(gameId);
+      game.removePlayer(socket.id);
 
-    socket
-      .to(gameId)
-      .emit(constants.PLAYER_LEFT, {
-        id: socket.id,
-      });
+      socket
+        .to(gameId)
+        .emit(constants.PLAYER_LEFT, {
+          id: socket.id,
+        });
 
-    log.info({
-      gameId,
-      playerId: socket.id,
-    }, 'Player left');
+      log.info({
+        gameId,
+        playerId: socket.id,
+      }, 'Player left');
+    }
   },
 
   castVote(socket, { vote }) {

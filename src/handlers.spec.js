@@ -85,19 +85,30 @@ describe('handlers', () => {
   });
 
   describe('disconnect()', () => {
-    beforeEach(() => {
-      disconnect(socketStub);
-    });
-
     it('removes the user from the game', () => {
+      disconnect(socketStub);
+
       expect(dependencies.store.getGame).to.have.been.calledWithExactly(gameId);
       expect(getGameStub.removePlayer).to.have.been.calledWith(socketStub.id);
     });
 
     it('emits to the room the user has left', () => {
+      disconnect(socketStub);
+
       expect(socketStub.to).to.have.been.calledWith(gameId);
       expect(socketStub.emit).to.have.been.calledWith(constants.PLAYER_LEFT, {
         id: socketStub.id,
+      });
+    });
+
+    describe('when the user is not in any game', () => {
+      it('does nothing', () => {
+        socketStub.rooms = {};
+        disconnect(socketStub);
+
+        expect(socketStub.to).to.have.not.been.called;
+        expect(socketStub.emit).to.have.not.been.called;
+        expect(dependencies.store.getGame).to.have.not.been.called;
       });
     });
   });
