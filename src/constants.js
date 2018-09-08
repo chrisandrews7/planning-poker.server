@@ -5,7 +5,7 @@ module.exports = {
   JOIN: 'join',
   VOTE: 'vote',
 
-  GAME_UPDATED: 'joined',
+  GAME_UPDATED: 'game_updated',
 
   PLAYER_JOINED: 'player_joined',
   PLAYER_LEFT: 'player_left',
