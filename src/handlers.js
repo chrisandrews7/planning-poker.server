@@ -1,19 +1,19 @@
-const getRoom = socket => Object.keys(socket.rooms).filter(item => item !== socket.id)[0];
+const getGame = socket => Object.keys(socket.rooms).filter(item => item !== socket.id)[0];
 
 module.exports = ({
   store,
   constants,
   log,
 }) => ({
-  connect(socket, { name, roomId }) {
-    socket.join(roomId, () => {
-      const board = store.getBoard(roomId);
-      board.addPlayer(socket.id, {
+  connect(socket, { name, gameId }) {
+    socket.join(gameId, () => {
+      const game = store.getGame(gameId);
+      game.addPlayer(socket.id, {
         name,
       });
 
       socket
-        .to(roomId)
+        .to(gameId)
         .emit(constants.PLAYER_JOINED, {
           id: socket.id,
           name,
@@ -21,11 +21,11 @@ module.exports = ({
 
       socket
         .emit(constants.JOINED, {
-          board: board.state,
+          game: game.state,
         });
 
       log.info({
-        roomId,
+        gameId,
         playerId: socket.id,
         name,
       }, 'Player joined');
@@ -33,38 +33,38 @@ module.exports = ({
   },
 
   disconnect(socket) {
-    const roomId = getRoom(socket);
+    const gameId = getGame(socket);
 
-    const board = store.getBoard(roomId);
-    board.removePlayer(socket.id);
+    const game = store.getGame(gameId);
+    game.removePlayer(socket.id);
 
     socket
-      .to(roomId)
+      .to(gameId)
       .emit(constants.PLAYER_LEFT, {
         id: socket.id,
       });
 
     log.info({
-      roomId,
+      gameId,
       playerId: socket.id,
     }, 'Player left');
   },
 
   castVote(socket, { vote }) {
-    const roomId = getRoom(socket);
+    const gameId = getGame(socket);
 
-    const board = store.getBoard(roomId);
-    board.setVote(socket.id, vote);
+    const game = store.getGame(gameId);
+    game.setVote(socket.id, vote);
 
     socket
-      .to(roomId)
+      .to(gameId)
       .emit(constants.PLAYER_VOTED, {
         id: socket.id,
         vote,
       });
 
     log.info({
-      roomId,
+      gameId,
       playerId: socket.id,
       vote,
     }, 'Player voted');

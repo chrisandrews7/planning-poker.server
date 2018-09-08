@@ -4,47 +4,47 @@ const { v4 } = require('uuid');
 const storeFactory = require('./store');
 
 describe('store', () => {
-  const { getBoard } = storeFactory({
+  const { getGame } = storeFactory({
     log: {
       info: () => {},
     },
   });
 
-  let boardId;
+  let gameId;
 
   beforeEach(() => {
-    boardId = v4();
+    gameId = v4();
   });
 
-  describe('getBoard()', () => {
-    describe('when no board ID is provided', () => {
+  describe('getGame()', () => {
+    describe('when no game ID is provided', () => {
       it('throws an error', () => {
-        expect(getBoard).to.throw(Error, 'Board ID is required');
+        expect(getGame).to.throw(Error, 'Game ID is required');
       });
     });
 
-    describe('when a board cannot be found', () => {
-      it('generates a new board', () => {
-        expect(getBoard(boardId).state).to.deep.equal({});
+    describe('when a game cannot be found', () => {
+      it('generates a new game', () => {
+        expect(getGame(gameId).state).to.deep.equal({});
       });
     });
 
     describe('state', () => {
-      it('returns the current state of a board', () => {
-        const { state } = getBoard(boardId);
+      it('returns the current state of a game', () => {
+        const { state } = getGame(gameId);
 
         expect(state).to.deep.equal({});
       });
 
-      describe('when a board already exists', () => {
-        it('returns the state of the existing board', () => {
+      describe('when a game already exists', () => {
+        it('returns the state of the existing game', () => {
           const playerId = v4();
 
-          const board1 = getBoard(boardId);
-          board1.addPlayer(playerId, { name: 'Simon' });
+          const game1 = getGame(gameId);
+          game1.addPlayer(playerId, { name: 'Simon' });
 
-          const board2 = getBoard(boardId);
-          expect(board2.state).to.have.key(playerId);
+          const game2 = getGame(gameId);
+          expect(game2.state).to.have.key(playerId);
         });
       });
     });
@@ -58,7 +58,7 @@ describe('store', () => {
 
       describe('when no player ID is provided', () => {
         it('throws an error', () => {
-          const { addPlayer } = getBoard(boardId);
+          const { addPlayer } = getGame(gameId);
 
           expect(addPlayer).to.throw(Error, 'Player ID is required');
         });
@@ -66,7 +66,7 @@ describe('store', () => {
 
       describe('when no player name is provided', () => {
         it('throws an error', () => {
-          const { addPlayer } = getBoard(boardId);
+          const { addPlayer } = getGame(gameId);
 
           expect(() => addPlayer(playerId, {})).to.throw(Error, 'Player Name is required');
         });
@@ -74,15 +74,15 @@ describe('store', () => {
 
       describe('when no default vote is provided', () => {
         it('sets a default undefined value', () => {
-          const { addPlayer, state } = getBoard(boardId);
+          const { addPlayer, state } = getGame(gameId);
           addPlayer(playerId, { name: 'Simon' }); // No vote value
 
           expect(state[playerId]).to.have.property('vote', undefined);
         });
       });
 
-      it('adds the new player to the board', () => {
-        const { addPlayer, state } = getBoard(boardId);
+      it('adds the new player to the game', () => {
+        const { addPlayer, state } = getGame(gameId);
         addPlayer(playerId, player);
 
         expect(state[playerId]).to.deep.equal(player);
@@ -94,14 +94,14 @@ describe('store', () => {
 
       describe('when no player ID is provided', () => {
         it('throws an error', () => {
-          const { removePlayer } = getBoard(boardId);
+          const { removePlayer } = getGame(gameId);
 
           expect(removePlayer).to.throw(Error, 'Player ID is required');
         });
       });
 
-      it('removes the player from the board', () => {
-        const { removePlayer, state, addPlayer } = getBoard(boardId);
+      it('removes the player from the game', () => {
+        const { removePlayer, state, addPlayer } = getGame(gameId);
 
         addPlayer(playerId, {
           name: 'Steve',
@@ -121,14 +121,14 @@ describe('store', () => {
 
       describe('when no player ID is provided', () => {
         it('throws an error', () => {
-          const { setVote } = getBoard(boardId);
+          const { setVote } = getGame(gameId);
 
           expect(setVote).to.throw(Error, 'Player ID is required');
         });
       });
 
       it('sets the players vote value', () => {
-        const { setVote, addPlayer, state } = getBoard(boardId);
+        const { setVote, addPlayer, state } = getGame(gameId);
 
         addPlayer(playerId, player);
         setVote(playerId, 55);

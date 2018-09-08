@@ -8,33 +8,33 @@ module.exports = ({ log }) => {
   const state = {};
 
   return {
-    getBoard(boardId) {
-      validateRequiredParam('Board ID', boardId);
+    getGame(gameId) {
+      validateRequiredParam('Game ID', gameId);
 
-      if (!state[boardId]) {
-        state[boardId] = {};
-        log.info({ boardId }, 'New board added');
+      if (!state[gameId]) {
+        state[gameId] = {};
+        log.info({ gameId }, 'New game added');
       }
 
-      const boardState = state[boardId];
+      const gameState = state[gameId];
 
       return {
-        state: boardState,
+        state: gameState,
         addPlayer(playerId, data) {
           validateRequiredParam('Player ID', playerId);
           validateRequiredParam('Player Name', data.name);
-          boardState[playerId] = {
+          gameState[playerId] = {
             vote: undefined,
             ...data,
           };
         },
         setVote(playerId, vote) {
           validateRequiredParam('Player ID', playerId);
-          boardState[playerId].vote = vote;
+          gameState[playerId].vote = vote;
         },
         removePlayer(playerId) {
           validateRequiredParam('Player ID', playerId);
-          delete boardState[playerId];
+          delete gameState[playerId];
         },
       };
     },

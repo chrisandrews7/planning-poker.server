@@ -5,8 +5,8 @@ const { v4 } = require('uuid');
 const { server, constants } = require('../src/container');
 
 describe('Integration', () => {
-  const SERVER_HOST = 'http://localhost:3000';
-  const roomId = v4();
+  const SERVER_HOST = 'http://localhost:3333';
+  const gameId = v4();
 
   beforeAll(() => {
     server.start();
@@ -17,11 +17,11 @@ describe('Integration', () => {
   });
 
   describe('when the user joins', () => {
-    it('sends the user the current players on the board', (done) => {
+    it('sends the user the current players on the game', (done) => {
       const client = io(SERVER_HOST);
 
-      client.once(constants.JOINED, ({ board }) => {
-        expect(board).to.deep.equal({
+      client.once(constants.JOINED, ({ game }) => {
+        expect(game).to.deep.equal({
           [client.id]: {
             name: 'Brian',
           },
@@ -31,7 +31,7 @@ describe('Integration', () => {
         client.close();
       });
 
-      client.emit(constants.JOIN, { roomId, name: 'Brian' });
+      client.emit(constants.JOIN, { gameId, name: 'Brian' });
     });
 
     it('broadcasts to the other players that a new player has joined', (done) => {
@@ -47,8 +47,8 @@ describe('Integration', () => {
         client2.close();
       });
 
-      client1.emit(constants.JOIN, { roomId, name: 'Steve' });
-      client2.emit(constants.JOIN, { roomId, name: 'Susan' });
+      client1.emit(constants.JOIN, { gameId, name: 'Steve' });
+      client2.emit(constants.JOIN, { gameId, name: 'Susan' });
     });
   });
 
@@ -56,8 +56,8 @@ describe('Integration', () => {
     it('broadcasts to the vote to the other players', (done) => {
       const client1 = io(SERVER_HOST);
       const client2 = io(SERVER_HOST);
-      client1.emit(constants.JOIN, { roomId, name: 'David' });
-      client2.emit(constants.JOIN, { roomId, name: 'Diane' });
+      client1.emit(constants.JOIN, { gameId, name: 'David' });
+      client2.emit(constants.JOIN, { gameId, name: 'Diane' });
 
       client1.once(constants.PLAYER_VOTED, ({ id, vote }) => {
         expect(id).to.equal(client2.id);
@@ -76,8 +76,8 @@ describe('Integration', () => {
     it('broadcasts to the other players that a player has left', (done) => {
       const client1 = io(SERVER_HOST);
       const client2 = io(SERVER_HOST);
-      client1.emit(constants.JOIN, { roomId, name: 'Simon' });
-      client2.emit(constants.JOIN, { roomId, name: 'Sharon' });
+      client1.emit(constants.JOIN, { gameId, name: 'Simon' });
+      client2.emit(constants.JOIN, { gameId, name: 'Sharon' });
 
       client1.once(constants.PLAYER_JOINED, () => {
         // Cache this as when the user disconnects we cant access it
