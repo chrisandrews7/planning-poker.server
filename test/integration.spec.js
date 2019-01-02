@@ -17,15 +17,11 @@ describe('Integration', () => {
   });
 
   describe('when the user joins', () => {
-    it('sends the user the current players on the game', (done) => {
+    it('updates the user that the join was successful', (done) => {
       const client = io(SERVER_HOST);
 
-      client.once(constants.GAME_UPDATED, ({ game }) => {
-        expect(game).to.deep.equal({
-          [client.id]: {
-            name: 'Brian',
-          },
-        });
+      client.once(constants.JOINED_GAME, ({ gameId: game }) => {
+        expect(gameId).to.equal(game);
         done();
 
         client.close();
@@ -38,9 +34,18 @@ describe('Integration', () => {
       const client1 = io(SERVER_HOST);
       const client2 = io(SERVER_HOST);
 
-      client1.once(constants.PLAYER_JOINED, ({ id, name }) => {
-        expect(id).to.equal(client2.id);
-        expect(name).to.equal('Susan');
+      client2.once(constants.BOARD_UPDATED, ({ board }) => {
+        expect(board).to.deep.equal({
+          [client1.id]: {
+            id: client1.id,
+            name: 'Steve',
+          },
+          [client2.id]: {
+            id: client2.id,
+            name: 'Susan',
+          },
+        });
+
         done();
 
         client1.close();
@@ -53,15 +58,29 @@ describe('Integration', () => {
   });
 
   describe('when the user votes', () => {
-    it('broadcasts to the vote to the other players', (done) => {
-      const client1 = io(SERVER_HOST);
-      const client2 = io(SERVER_HOST);
+    const client1 = io(SERVER_HOST);
+    const client2 = io(SERVER_HOST);
+
+    beforeAll((done) => {
       client1.emit(constants.JOIN, { gameId, name: 'David' });
       client2.emit(constants.JOIN, { gameId, name: 'Diane' });
+      client2.once(constants.PLAYER_JOINED, done);
+    });
 
-      client1.once(constants.PLAYER_VOTED, ({ id, vote }) => {
-        expect(id).to.equal(client2.id);
-        expect(vote).to.equal(13);
+    it('broadcasts to the vote to the other players', (done) => {
+      client1.once(constants.BOARD_UPDATED, ({ board }) => {
+        console.log(board, client1.id, client2.id);
+        expect(board).to.deep.equal({
+          [client1.id]: {
+            id: client1.id,
+            name: 'David',
+          },
+          [client2.id]: {
+            id: client2.id,
+            name: 'Diane',
+            vote: 13,
+          },
+        });
 
         client1.close();
         client2.close();
@@ -73,25 +92,30 @@ describe('Integration', () => {
   });
 
   describe('when the user leaves', () => {
-    it('broadcasts to the other players that a player has left', (done) => {
-      const client1 = io(SERVER_HOST);
-      const client2 = io(SERVER_HOST);
+    const client1 = io(SERVER_HOST);
+    const client2 = io(SERVER_HOST);
+
+    beforeAll((done) => {
       client1.emit(constants.JOIN, { gameId, name: 'Simon' });
       client2.emit(constants.JOIN, { gameId, name: 'Sharon' });
 
-      client1.once(constants.PLAYER_JOINED, () => {
-        // Cache this as when the user disconnects we cant access it
-        const clientId = client2.id;
+      client2.once(constants.PLAYER_JOINED, done);
+    });
 
-        client1.once(constants.PLAYER_LEFT, ({ id }) => {
-          expect(id).to.equal(clientId);
-
-          client1.close();
-          done();
+    it('broadcasts to the other players that a player has left', (done) => {
+      client2.once(constants.BOARD_UPDATED, ({ board }) => {
+        expect(board).to.deep.equal({
+          [client2.id]: {
+            id: client2.id,
+            name: 'Sharon',
+          },
         });
 
         client2.close();
+        done();
       });
+
+      client1.close();
     });
   });
 });

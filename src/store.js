@@ -24,6 +24,7 @@ module.exports = ({ log }) => {
           validateRequiredParam('Player ID', playerId);
           validateRequiredParam('Player Name', data.name);
           gameState[playerId] = {
+            id: playerId,
             vote: undefined,
             ...data,
           };

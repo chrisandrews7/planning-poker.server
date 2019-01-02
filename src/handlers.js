@@ -5,70 +5,92 @@ module.exports = ({
   constants,
   log,
 }) => ({
-  connect(socket, { name, gameId }) {
+  connect(socket, io, { name, gameId }) {
     socket.join(gameId, () => {
-      const game = store.getGame(gameId);
-      game.addPlayer(socket.id, {
-        name,
-      });
-
-      socket
-        .to(gameId)
-        .emit(constants.PLAYER_JOINED, {
-          id: socket.id,
+      try {
+        const game = store.getGame(gameId);
+        game.addPlayer(socket.id, {
           name,
         });
 
-      socket
-        .emit(constants.GAME_UPDATED, {
-          game: game.state,
-        });
+        socket
+          .emit(constants.JOINED_GAME, {
+            gameId,
+          });
 
-      log.info({
-        gameId,
-        playerId: socket.id,
-        name,
-      }, 'Player joined');
+        io
+          .to(gameId)
+          .emit(constants.BOARD_UPDATED, {
+            board: game.state,
+          });
+
+        log.info({
+          gameId,
+          playerId: socket.id,
+          name,
+        }, 'Player joined');
+      } catch (err) {
+        log.error({
+          err,
+          gameId,
+          playerId: socket.id,
+          name,
+        }, 'Join error');
+      }
     });
   },
 
-  disconnect(socket) {
-    const gameId = getGame(socket);
+  disconnect(socket, io) {
+    try {
+      const gameId = getGame(socket);
 
-    if (gameId) {
+      if (gameId) {
+        const game = store.getGame(gameId);
+        game.removePlayer(socket.id);
+
+        io
+          .to(gameId)
+          .emit(constants.BOARD_UPDATED, {
+            board: game.state,
+          });
+
+        log.info({
+          gameId,
+          playerId: socket.id,
+        }, 'Player left');
+      }
+    } catch (err) {
+      log.error({
+        err,
+        playerId: socket.id,
+      }, 'Leave error');
+    }
+  },
+
+  castVote(socket, io, { vote }) {
+    try {
+      const gameId = getGame(socket);
+
       const game = store.getGame(gameId);
-      game.removePlayer(socket.id);
+      game.setVote(socket.id, vote);
 
-      socket
+      io
         .to(gameId)
-        .emit(constants.PLAYER_LEFT, {
-          id: socket.id,
+        .emit(constants.BOARD_UPDATED, {
+          board: game.state,
         });
 
       log.info({
         gameId,
         playerId: socket.id,
-      }, 'Player left');
-    }
-  },
-
-  castVote(socket, { vote }) {
-    const gameId = getGame(socket);
-
-    const game = store.getGame(gameId);
-    game.setVote(socket.id, vote);
-
-    socket
-      .to(gameId)
-      .emit(constants.PLAYER_VOTED, {
-        id: socket.id,
         vote,
-      });
-
-    log.info({
-      gameId,
-      playerId: socket.id,
-      vote,
-    }, 'Player voted');
+      }, 'Player voted');
+    } catch (err) {
+      log.error({
+        err,
+        vote,
+        playerId: socket.id,
+      }, 'Vote error');
+    }
   },
 });

@@ -85,7 +85,10 @@ describe('store', () => {
         const { addPlayer, state } = getGame(gameId);
         addPlayer(playerId, player);
 
-        expect(state[playerId]).to.deep.equal(player);
+        expect(state[playerId]).to.deep.equal({
+          ...player,
+          id: playerId,
+        });
       });
     });
 

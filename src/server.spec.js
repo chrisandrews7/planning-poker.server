@@ -54,7 +54,7 @@ describe('server', () => {
           expect(socketStub.on).to.have.been.calledWith(
             constants.JOIN,
           );
-          expect(dependencies.handlers.connect).to.have.been.calledWith(socketStub, 'testJoinData');
+          expect(dependencies.handlers.connect).to.have.been.calledWith(socketStub, ioStub, 'testJoinData');
         });
       });
 
@@ -69,7 +69,7 @@ describe('server', () => {
           expect(socketStub.on).to.have.been.calledWith(
             constants.VOTE,
           );
-          expect(dependencies.handlers.castVote).to.have.been.calledWith(socketStub, 'testVoteValue');
+          expect(dependencies.handlers.castVote).to.have.been.calledWith(socketStub, ioStub, 'testVoteValue');
         });
       });
 
@@ -84,7 +84,7 @@ describe('server', () => {
           expect(socketStub.on).to.have.been.calledWith(
             constants.DISCONNECTING,
           );
-          expect(dependencies.handlers.disconnect).to.have.been.calledWith(socketStub, 'testDisconnectData');
+          expect(dependencies.handlers.disconnect).to.have.been.calledWith(socketStub, ioStub, 'testDisconnectData');
         });
       });
     });
