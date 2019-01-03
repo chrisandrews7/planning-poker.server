@@ -6,10 +6,14 @@ const { server, constants } = require('../src/container');
 
 describe('Integration', () => {
   const SERVER_HOST = 'http://localhost:3333';
-  const gameId = v4();
+  let gameId;
 
   beforeAll(() => {
     server.start();
+  });
+
+  beforeEach(() => {
+    gameId = v4();
   });
 
   afterAll(() => {
@@ -22,9 +26,9 @@ describe('Integration', () => {
 
       client.once(constants.JOINED_GAME, ({ gameId: game }) => {
         expect(gameId).to.equal(game);
-        done();
 
         client.close();
+        done();
       });
 
       client.emit(constants.JOIN, { gameId, name: 'Brian' });
@@ -46,10 +50,9 @@ describe('Integration', () => {
           },
         });
 
-        done();
-
         client1.close();
         client2.close();
+        done();
       });
 
       client1.emit(constants.JOIN, { gameId, name: 'Steve' });
@@ -64,30 +67,31 @@ describe('Integration', () => {
     beforeAll((done) => {
       client1.emit(constants.JOIN, { gameId, name: 'David' });
       client2.emit(constants.JOIN, { gameId, name: 'Diane' });
-      client2.once(constants.PLAYER_JOINED, done);
+      client2.once(constants.JOINED_GAME, () => done());
+    });
+
+    afterAll(() => {
+      client1.close();
+      client2.close();
     });
 
     it('broadcasts to the vote to the other players', (done) => {
-      client1.once(constants.BOARD_UPDATED, ({ board }) => {
-        console.log(board, client1.id, client2.id);
+      client2.once(constants.BOARD_UPDATED, ({ board }) => {
         expect(board).to.deep.equal({
           [client1.id]: {
             id: client1.id,
             name: 'David',
+            vote: 13,
           },
           [client2.id]: {
             id: client2.id,
             name: 'Diane',
-            vote: 13,
           },
         });
-
-        client1.close();
-        client2.close();
         done();
       });
 
-      client2.emit(constants.VOTE, { vote: 13 });
+      client1.emit(constants.VOTE, { vote: 13 });
     });
   });
 
@@ -99,7 +103,11 @@ describe('Integration', () => {
       client1.emit(constants.JOIN, { gameId, name: 'Simon' });
       client2.emit(constants.JOIN, { gameId, name: 'Sharon' });
 
-      client2.once(constants.PLAYER_JOINED, done);
+      client2.once(constants.JOINED_GAME, () => done());
+    });
+
+    afterAll(() => {
+      client2.close();
     });
 
     it('broadcasts to the other players that a player has left', (done) => {
@@ -111,7 +119,6 @@ describe('Integration', () => {
           },
         });
 
-        client2.close();
         done();
       });
 
