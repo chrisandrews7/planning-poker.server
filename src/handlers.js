@@ -5,12 +5,12 @@ module.exports = ({
   constants,
   log,
 }) => {
-  function getGameId(socket) {
+  function getSocketGameId(socket) {
     return Object.keys(socket.rooms).filter(item => item !== socket.id)[0];
   }
 
   function modifyGame(socket, params, action, func) {
-    const gameId = getGameId(socket);
+    const gameId = getSocketGameId(socket);
     const logger = log.child({
       gameId,
       playerId: socket.id,
