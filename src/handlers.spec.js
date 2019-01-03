@@ -15,19 +15,24 @@ describe('handlers', () => {
     state: 'mockState',
   };
   const socketStub = {
+    broadcast: {
+      to: sandbox.stub().returnsThis(),
+      emit: sandbox.stub().returnsThis(),
+    },
+    emit: sandbox.stub().returnsThis(),
     join: sandbox.stub().yields(),
-    emit: sandbox.stub().returnsThis(),
   };
-  const ioStub = {
-    to: sandbox.stub().returnsThis(),
-    emit: sandbox.stub().returnsThis(),
-  };
+
   let gameId;
 
   const dependencies = {
     constants,
     log: {
-      info: () => {},
+      child: () => ({
+        trace: () => {},
+        warn: () => {},
+        error: ({ err }) => { throw err; },
+      }),
     },
     store: {
       getGame: sandbox.stub().returns(getGameStub),
@@ -53,7 +58,7 @@ describe('handlers', () => {
     const name = 'Steve';
 
     beforeEach(() => {
-      connect(socketStub, ioStub, {
+      connect(socketStub, {
         name,
         gameId,
       });
@@ -71,9 +76,16 @@ describe('handlers', () => {
         });
       });
 
-      it('emits the new game state', () => {
-        expect(ioStub.to).to.have.been.calledWith(gameId);
-        expect(ioStub.emit).to.have.been.calledWith(
+      it('broadcasts the updated game state', () => {
+        expect(socketStub.broadcast.to).to.have.been.calledWith(gameId);
+        expect(socketStub.broadcast.emit).to.have.been.calledWith(
+          constants.BOARD_UPDATED,
+          { board: getGameStub.state },
+        );
+      });
+
+      it('emits to the user the game state', () => {
+        expect(socketStub.emit).to.have.been.calledWith(
           constants.BOARD_UPDATED,
           { board: getGameStub.state },
         );
@@ -89,30 +101,39 @@ describe('handlers', () => {
   });
 
   describe('disconnect()', () => {
-    it('removes the user from the game', () => {
-      disconnect(socketStub, ioStub);
+    describe('when the user is in a room', () => {
+      beforeEach(() => {
+        disconnect(socketStub);
+      });
 
-      expect(dependencies.store.getGame).to.have.been.calledWithExactly(gameId);
-      expect(getGameStub.removePlayer).to.have.been.calledWith(socketStub.id);
-    });
+      it('removes the user from the game', () => {
+        expect(dependencies.store.getGame).to.have.been.calledWithExactly(gameId);
+        expect(getGameStub.removePlayer).to.have.been.calledWith(socketStub.id);
+      });
 
-    it('emits the new game state', () => {
-      disconnect(socketStub, ioStub);
+      it('broadcasts the updated game state', () => {
+        expect(socketStub.broadcast.to).to.have.been.calledWith(gameId);
+        expect(socketStub.broadcast.emit).to.have.been.calledWith(
+          constants.BOARD_UPDATED,
+          { board: getGameStub.state },
+        );
+      });
 
-      expect(ioStub.to).to.have.been.calledWith(gameId);
-      expect(ioStub.emit).to.have.been.calledWith(
-        constants.BOARD_UPDATED,
-        { board: getGameStub.state },
-      );
+      it('emits to the user the game state', () => {
+        expect(socketStub.emit).to.have.been.calledWith(
+          constants.BOARD_UPDATED,
+          { board: getGameStub.state },
+        );
+      });
     });
 
     describe('when the user is not in any game', () => {
       it('does nothing', () => {
         socketStub.rooms = {};
-        disconnect(socketStub, ioStub);
+        disconnect(socketStub);
 
-        expect(ioStub.to).to.have.not.been.called;
-        expect(ioStub.emit).to.have.not.been.called;
+        expect(socketStub.broadcast.to).to.have.not.been.called;
+        expect(socketStub.broadcast.emit).to.have.not.been.called;
         expect(dependencies.store.getGame).to.have.not.been.called;
       });
     });
@@ -122,7 +143,7 @@ describe('handlers', () => {
     const vote = 5;
 
     beforeEach(() => {
-      castVote(socketStub, ioStub, { vote });
+      castVote(socketStub, { vote });
     });
 
     it('updates the users vote in the game', () => {
@@ -130,9 +151,16 @@ describe('handlers', () => {
       expect(getGameStub.setVote).to.have.been.calledWithExactly(socketStub.id, vote);
     });
 
-    it('emits the new game state', () => {
-      expect(ioStub.to).to.have.been.calledWith(gameId);
-      expect(ioStub.emit).to.have.been.calledWith(
+    it('broadcasts the updated game state', () => {
+      expect(socketStub.broadcast.to).to.have.been.calledWith(gameId);
+      expect(socketStub.broadcast.emit).to.have.been.calledWith(
+        constants.BOARD_UPDATED,
+        { board: getGameStub.state },
+      );
+    });
+
+    it('emits to the user the game state', () => {
+      expect(socketStub.emit).to.have.been.calledWith(
         constants.BOARD_UPDATED,
         { board: getGameStub.state },
       );

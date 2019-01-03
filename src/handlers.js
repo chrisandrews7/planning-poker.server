@@ -1,96 +1,74 @@
-const getGame = socket => Object.keys(socket.rooms).filter(item => item !== socket.id)[0];
+
 
 module.exports = ({
   store,
   constants,
   log,
-}) => ({
-  connect(socket, io, { name, gameId }) {
-    socket.join(gameId, () => {
-      try {
-        const game = store.getGame(gameId);
-        game.addPlayer(socket.id, {
-          name,
-        });
+}) => {
+  function getGameId(socket) {
+    return Object.keys(socket.rooms).filter(item => item !== socket.id)[0];
+  }
 
-        socket
-          .emit(constants.JOINED_GAME, {
-            gameId,
-          });
-
-        io
-          .to(gameId)
-          .emit(constants.BOARD_UPDATED, {
-            board: game.state,
-          });
-
-        log.info({
-          gameId,
-          playerId: socket.id,
-          name,
-        }, 'Player joined');
-      } catch (err) {
-        log.error({
-          err,
-          gameId,
-          playerId: socket.id,
-          name,
-        }, 'Join error');
-      }
+  function modifyGame(socket, params, action, func) {
+    const gameId = getGameId(socket);
+    const logger = log.child({
+      gameId,
+      playerId: socket.id,
+      params,
     });
-  },
 
-  disconnect(socket, io) {
     try {
-      const gameId = getGame(socket);
-
-      if (gameId) {
-        const game = store.getGame(gameId);
-        game.removePlayer(socket.id);
-
-        io
-          .to(gameId)
-          .emit(constants.BOARD_UPDATED, {
-            board: game.state,
-          });
-
-        log.info({
-          gameId,
-          playerId: socket.id,
-        }, 'Player left');
+      if (!gameId) {
+        logger.warn('Player not in a game');
+        return;
       }
-    } catch (err) {
-      log.error({
-        err,
-        playerId: socket.id,
-      }, 'Leave error');
-    }
-  },
-
-  castVote(socket, io, { vote }) {
-    try {
-      const gameId = getGame(socket);
 
       const game = store.getGame(gameId);
-      game.setVote(socket.id, vote);
+      func(game);
 
-      io
+      socket
+        .emit(constants.BOARD_UPDATED, {
+          board: game.state,
+        });
+
+      socket
+        .broadcast
         .to(gameId)
         .emit(constants.BOARD_UPDATED, {
           board: game.state,
         });
 
-      log.info({
-        gameId,
-        playerId: socket.id,
-        vote,
-      }, 'Player voted');
+      logger.trace(`Player ${action}`);
     } catch (err) {
-      log.error({
-        err,
-        vote,
-        playerId: socket.id,
-      }, 'Vote error');
+      logger.error({ err }, `${action} Error`);
     }
-  },
-});
+  }
+
+  return {
+    connect(socket, params) {
+      socket.join(params.gameId, () => {
+        modifyGame(socket, params, 'Join', (game) => {
+          game.addPlayer(socket.id, {
+            name: params.name,
+          });
+          socket
+            .emit(constants.JOINED_GAME, {
+              gameId: params.gameId,
+            });
+        });
+      });
+    },
+
+    disconnect(socket) {
+      modifyGame(socket, undefined, 'Leave', (game) => {
+        game.removePlayer(socket.id);
+      });
+    },
+
+    castVote(socket, params) {
+      modifyGame(socket, params, 'Vote', (game) => {
+        game.setVote(socket.id, params.vote);
+      });
+    },
+  };
+};
