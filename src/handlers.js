@@ -7,12 +7,11 @@ module.exports = ({
     return Object.keys(socket.rooms).filter(item => item !== socket.id)[0];
   }
 
-  function modifyGame(socket, params, action, func) {
+  function modifyGame(action, socket, func) {
     const gameId = getSocketGameId(socket);
     const logger = log.child({
       gameId,
       playerId: socket.id,
-      params,
     });
 
     try {
@@ -45,7 +44,7 @@ module.exports = ({
   return {
     connect(socket, params) {
       socket.join(params.gameId, () => {
-        modifyGame(socket, params, 'Join', (game) => {
+        modifyGame('Join', socket, (game) => {
           game.addPlayer(socket.id, {
             name: params.name,
           });
@@ -58,13 +57,13 @@ module.exports = ({
     },
 
     disconnect(socket) {
-      modifyGame(socket, undefined, 'Leave', (game) => {
+      modifyGame('Leave', socket, (game) => {
         game.removePlayer(socket.id);
       });
     },
 
     castVote(socket, params) {
-      modifyGame(socket, params, 'Vote', (game) => {
+      modifyGame('Vote', socket, (game) => {
         game.setVote(socket.id, params.vote);
       });
     },

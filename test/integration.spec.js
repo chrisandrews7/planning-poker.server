@@ -106,10 +106,6 @@ describe('Integration', () => {
       client2.once(constants.JOINED_GAME, () => done());
     });
 
-    afterAll(() => {
-      client2.close();
-    });
-
     it('broadcasts to the other players that a player has left', (done) => {
       client2.once(constants.BOARD_UPDATED, ({ board }) => {
         expect(board).to.deep.equal({
@@ -119,6 +115,7 @@ describe('Integration', () => {
           },
         });
 
+        client2.close();
         done();
       });
 
