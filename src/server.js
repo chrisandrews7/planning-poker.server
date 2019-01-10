@@ -7,6 +7,8 @@ module.exports = ({
     start() {
       io = socketio(config.PORT);
 
+      io.origins(config.CORS_WHITELIST);
+
       io.on(constants.CONNECTION, (socket) => {
         socket.on(constants.JOIN, handlers.connect.bind(null, socket));
         socket.on(constants.VOTE, handlers.castVote.bind(null, socket));

@@ -21,6 +21,7 @@ container.register({
   handlers: asFunction(handlers),
   config: asValue({
     PORT: process.env.PORT || 3000,
+    CORS_WHITELIST: process.env.CORS_WHITELIST || '*:*',
   }),
 });
 

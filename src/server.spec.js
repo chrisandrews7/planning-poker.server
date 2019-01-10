@@ -10,12 +10,14 @@ describe('server', () => {
   const ioStub = {
     on: sandbox.stub(),
     close: sandbox.stub(),
+    origins: sandbox.spy(),
   };
 
   const dependencies = {
     constants,
     config: {
       PORT: 3000,
+      CORS_WHITELIST: 'test.com',
     },
     log: {
       info: () => {},
@@ -40,6 +42,10 @@ describe('server', () => {
 
     it('starts the socket server', () => {
       expect(dependencies.socketio).to.have.been.calledWithExactly(dependencies.config.PORT);
+    });
+
+    it('sets CORS the socket server', () => {
+      expect(ioStub.origins).to.have.been.calledWithExactly(dependencies.config.CORS_WHITELIST);
     });
 
     describe('on a new socket connection', () => {
