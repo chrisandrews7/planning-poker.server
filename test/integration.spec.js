@@ -5,7 +5,7 @@ const { v4 } = require('uuid');
 const { server, constants } = require('../src/container');
 
 describe('Integration', () => {
-  const SERVER_HOST = 'http://localhost:3333';
+  const SERVER_HOST = 'http://localhost:3000';
   let gameId;
 
   beforeAll(() => {

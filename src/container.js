@@ -20,7 +20,7 @@ container.register({
   store: asFunction(store),
   handlers: asFunction(handlers),
   config: asValue({
-    PORT: 3333,
+    PORT: process.env.PORT || 3000,
   }),
 });
 
