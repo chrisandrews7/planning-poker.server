@@ -139,5 +139,22 @@ describe('store', () => {
         expect(state[playerId]).to.have.property('vote', 55);
       });
     });
+
+    describe('resetVotes()', () => {
+      const playerId = v4();
+
+      it('removes the all the votes', () => {
+        const {
+          resetVotes, addPlayer, setVote, state,
+        } = getGame(gameId);
+
+        addPlayer(playerId, { name: 'Dave' });
+        setVote(playerId, 55);
+        expect(state[playerId]).to.have.property('vote', 55);
+
+        resetVotes();
+        expect(state[playerId]).to.have.property('vote', undefined);
+      });
+    });
   });
 });

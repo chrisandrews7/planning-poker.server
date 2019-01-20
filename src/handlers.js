@@ -45,9 +45,12 @@ module.exports = ({
     connect(socket, params) {
       socket.join(params.gameId, () => {
         modifyGame('Join', socket, (game) => {
-          game.addPlayer(socket.id, {
-            name: params.name,
-          });
+          if (!params.isObserver) {
+            game.addPlayer(socket.id, {
+              name: params.name,
+            });
+          }
+
           socket
             .emit(constants.JOINED_GAME, {
               gameId: params.gameId,
@@ -65,6 +68,12 @@ module.exports = ({
     castVote(socket, params) {
       modifyGame('Vote', socket, (game) => {
         game.setVote(socket.id, params.vote);
+      });
+    },
+
+    resetVotes(socket) {
+      modifyGame('Reset Votes', socket, (game) => {
+        game.resetVotes();
       });
     },
   };

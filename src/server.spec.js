@@ -26,6 +26,7 @@ describe('server', () => {
     handlers: {
       connect: sandbox.spy(),
       castVote: sandbox.spy(),
+      resetVotes: sandbox.spy(),
       disconnect: sandbox.spy(),
     },
   };
@@ -76,6 +77,21 @@ describe('server', () => {
             constants.VOTE,
           );
           expect(dependencies.handlers.castVote).to.have.been.calledWith(socketStub, 'testVoteValue');
+        });
+      });
+
+      describe('on a RESET event', () => {
+        it('uses the resetVotes handler', () => {
+          const socketStub = { on: sandbox.stub().yields() };
+          ioStub
+            .on
+            .withArgs(constants.CONNECTION)
+            .yield(socketStub);
+
+          expect(socketStub.on).to.have.been.calledWith(
+            constants.RESET,
+          );
+          expect(dependencies.handlers.resetVotes).to.have.been.calledWith(socketStub);
         });
       });
 

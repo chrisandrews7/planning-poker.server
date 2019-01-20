@@ -33,6 +33,11 @@ module.exports = ({ log }) => {
           validateRequiredParam('Player ID', playerId);
           gameState[playerId].vote = vote;
         },
+        resetVotes() {
+          Object.keys(gameState).forEach((playerId) => {
+            gameState[playerId].vote = undefined;
+          });
+        },
         removePlayer(playerId) {
           validateRequiredParam('Player ID', playerId);
           delete gameState[playerId];
