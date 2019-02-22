@@ -24,17 +24,17 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
-    "eslint": "^4.19.1",
+    "eslint": "^5.14.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
-    "jest": "^23.6.0",
-    "sinon": "^6.1.5",
+    "jest": "^24.1.0",
+    "sinon": "^7.2.4",
     "sinon-chai": "^3.2.0",
     "socket.io-client": "^2.1.1",
     "uuid": "^3.3.2"
   },
   "dependencies": {
-    "awilix": "^3.0.9",
+    "awilix": "^4.2.0",
     "pino": "^5.0.1",
     "socket.io": "^2.1.1"
   }
