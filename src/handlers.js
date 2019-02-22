@@ -48,6 +48,7 @@ module.exports = ({
           if (!params.isObserver) {
             game.addPlayer(socket.id, {
               name: params.name,
+              vote: params.vote,
             });
           }
 

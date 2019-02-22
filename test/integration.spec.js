@@ -75,7 +75,7 @@ describe('Integration', () => {
       client2.close();
     });
 
-    it('broadcasts to the vote to the other players', (done) => {
+    it('broadcasts the vote to the other players', (done) => {
       client2.once(constants.BOARD_UPDATED, ({ board }) => {
         expect(board).to.deep.equal({
           [client1.id]: {
@@ -92,6 +92,40 @@ describe('Integration', () => {
       });
 
       client1.emit(constants.VOTE, { vote: 13 });
+    });
+  });
+
+  describe('when the user resets the games votes', () => {
+    const client1 = io(SERVER_HOST);
+    const client2 = io(SERVER_HOST);
+
+    beforeAll((done) => {
+      client1.emit(constants.JOIN, { gameId, name: 'David', vote: 13 });
+      client2.emit(constants.JOIN, { gameId, name: 'Diane', vote: 8 });
+      client2.once(constants.JOINED_GAME, () => done());
+    });
+
+    afterAll(() => {
+      client1.close();
+      client2.close();
+    });
+
+    it('broadcasts empty votes for every player in the game', (done) => {
+      client2.once(constants.BOARD_UPDATED, ({ board }) => {
+        expect(board).to.deep.equal({
+          [client1.id]: {
+            id: client1.id,
+            name: 'David',
+          },
+          [client2.id]: {
+            id: client2.id,
+            name: 'Diane',
+          },
+        });
+        done();
+      });
+
+      client2.emit(constants.RESET);
     });
   });
 

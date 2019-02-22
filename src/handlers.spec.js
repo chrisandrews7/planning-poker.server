@@ -96,6 +96,7 @@ describe('handlers', () => {
           expect(dependencies.store.getGame).to.have.been.calledWithExactly(gameId);
           expect(getGameStub.addPlayer).to.have.been.calledWith(socketStub.id, {
             name,
+            vote: undefined,
           });
         });
 
