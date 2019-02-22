@@ -6,7 +6,7 @@ const storeFactory = require('./store');
 describe('store', () => {
   const { getGame } = storeFactory({
     log: {
-      info: () => {},
+      trace: () => {},
     },
   });
 

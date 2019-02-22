@@ -13,7 +13,7 @@ module.exports = ({ log }) => {
 
       if (!state[gameId]) {
         state[gameId] = {};
-        log.info({ gameId }, 'New game added');
+        log.trace({ gameId }, 'New game added');
       }
 
       const gameState = state[gameId];
